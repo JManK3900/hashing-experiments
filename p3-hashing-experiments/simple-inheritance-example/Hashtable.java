@@ -1,14 +1,16 @@
-import java.util.*;
+import javax.lang.model.util.ElementScanner14;
 
-public class HashTable<K>
-(
+public abstract class Hashtable<K>
+{
     HashObject[] array;
     int dupeCount = 0;
     int probeCount = 0;
-    int size = 0;
-    int maxSize;
-    double loadFactor = 0.5;
+    protected int size = 0;
+    protected int maxSize;
+    protected double loadFactor = 0.5;
     static int debugLevel = 0;
+
+    protected abstract int h (Object element, int probe);
     
 
     //**************************************************************************************************** */
@@ -16,12 +18,13 @@ public class HashTable<K>
     //**************************************************************************************************** */
 
 
-    public HashTable(){
+    public Hashtable(){
         array = new HashObject[101];
         maxSize = 1 + (int)loadFactor*capacity();
     }
 
-    public HashTable(double loadFactor, int capacity){
+    public Hashtable(double loadFactor, int capacity){
+        maxSize = capacity;
         this.loadFactor = loadFactor;
         array = new HashObject[capacity];
         maxSize = 1 + (int)loadFactor*capacity();
@@ -47,10 +50,10 @@ public class HashTable<K>
         {
             if(o==this) return true;
 
-            if(!(0 instanceof HashObject)) return false;
+            if(!(o instanceof HashObject)) return false;
 
             HashObject o2 = (HashObject)o;
-            reutnr o2.k.equals(this.k);
+            return o2.k.equals(this.k);
         }
 
         public String toString()
@@ -60,11 +63,12 @@ public class HashTable<K>
                 case 0:
                     return "" + k;
                 case 1:
-                    return "" + 
+                    return "" + k;
                 case 2:
                    return "" + k + " " + probeCount + " " + dupeCount;
 
             }
+            return "Error";
         }
 
         public Object getKey()
@@ -77,12 +81,12 @@ public class HashTable<K>
     //**************Method Definition********************************************************************* */
     //**************************************************************************************************** */
 
-    int h2(int keyval)
-    {
-        return 1;
-    }
+    // int h2(int keyval)
+    // {
+    //     return 1;
+    // }
 
-    private vodi reHash()
+    private void reHash()
     {
         System.out.println("Uh oh");
         System.exit(-1);
@@ -90,33 +94,54 @@ public class HashTable<K>
 
     public void put(K k)
     {
+        //checks if size is too big
         if(size==maxSize) reHash();
         int i;
         int c=0;
-        do
-        {
-            i = pMod(pMod(k.hashCode(),capacity()) + c*h2(k.hashCode()), capacity());
+        //runs linear probing value and inserts value
+        do{
+            i = h(k,c);
             if(array[i]!=null) array[i].probeCount++;
             probeCount++;
             c++;
-        } while(array[i]!=null && !array[i].k.equals(k));
-
+        }while(array[i]!=null && array[i].k.equals(k));
         if(array[i]!=null)
         {
             array[i].dupeCount++;
             dupeCount++;
         }
-        else
-        {
+        else{
             array[i] = new HashObject(k);
             array[i].probeCount = c;
             probeCount += c;
-            size++; //@@@
+            size++;
         }
+
+        //class example don't delete just here for reference
+        // do
+        // {
+        //     i = pMod(pMod(k.hashCode(),capacity()) + c*h2(k.hashCode()), capacity());
+        //     if(array[i]!=null) array[i].probeCount++;
+        //     probeCount++;
+        //     c++;
+        // } while(array[i]!=null && !array[i].k.equals(k));
+
+        // if(array[i]!=null)
+        // {
+        //     array[i].dupeCount++;
+        //     dupeCount++;
+        // }
+        // else
+        // {
+        //     array[i] = new HashObject(k);
+        //     array[i].probeCount = c;
+        //     probeCount += c;
+        //     size++; //@@@
+        // }
 
     }
 
-    int public pMod(int dvd, int div)
+    public int pMod(int dvd, int div)
     {
         int q = dvd%div;
         if(q<0) q+=div;
@@ -133,4 +158,4 @@ public class HashTable<K>
         return array.length;
     }
 
-)
+}
