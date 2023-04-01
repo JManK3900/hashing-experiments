@@ -12,3 +12,7 @@ Finally, the MammalTest.java class is a driver that demonstrates the usage of th
 Javadoc and other comments are intentionally skipped in this example to just present the basic
 skeleton of a class hierarchy.
 
+
+//Finish up HashtableTest with each debug lvl
+
+

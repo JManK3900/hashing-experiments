@@ -1,4 +1,4 @@
-public class LinearProbing<K> extends Hashtable{
+public class LinearProbing<K> extends Hashtable<K>{
 
   public LinearProbing(double loadFactor, int capacity){
     super(loadFactor,capacity);
@@ -11,7 +11,7 @@ public class LinearProbing<K> extends Hashtable{
     int h1 = pMod(element.hashCode(), capacity());
 
     //h(k,i) = (h1(k) + i) mod m
-    int h1Final = ((h1 * element.hashCode()) + probe) % capacity();
+    int h1Final = (h1 + probe) % capacity();
 
     return h1Final;
   }

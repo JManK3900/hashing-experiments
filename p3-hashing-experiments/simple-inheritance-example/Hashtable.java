@@ -1,5 +1,3 @@
-import javax.lang.model.util.ElementScanner14;
-
 public abstract class Hashtable<K>
 {
     HashObject[] array;
@@ -9,6 +7,7 @@ public abstract class Hashtable<K>
     protected int maxSize;
     protected double loadFactor = 0.5;
     static int debugLevel = 0;
+    protected int isDupe;
 
     protected abstract int h (Object element, int probe);
     
@@ -27,7 +26,7 @@ public abstract class Hashtable<K>
         maxSize = capacity;
         this.loadFactor = loadFactor;
         array = new HashObject[capacity];
-        maxSize = 1 + (int)loadFactor*capacity();
+        maxSize = (int) (1 + Math.ceil(loadFactor*capacity()));
     }
 
     //**************************************************************************************************** */
@@ -56,19 +55,23 @@ public abstract class Hashtable<K>
             return o2.k.equals(this.k);
         }
 
+        @Override
         public String toString()
         {
-            switch(debugLevel)
-            {
-                case 0:
-                    return "" + k;
-                case 1:
-                    return "" + k;
-                case 2:
-                   return "" + k + " " + probeCount + " " + dupeCount;
+            // switch(debugLevel)
+            // {
+            //     case 0:
+            //         //System.out.println("Found a twin prime table capacity: " + ;)
 
-            }
-            return "Error";
+            //         return "Test 1: " + k;
+            //     case 1:
+            //         return "Test 2: " + k;
+            //     case 2:
+            return k + " " + dupeCount + " " + probeCount;
+            // "table[" + index + "]: " + this.key + " " + this.frequency + " " + this.probeCount
+
+            // }
+            // return "Error!";
         }
 
         public Object getKey()
@@ -95,49 +98,32 @@ public abstract class Hashtable<K>
     public void put(K k)
     {
         //checks if size is too big
-        if(size==maxSize) reHash();
-        int i;
-        int c=0;
-        //runs linear probing value and inserts value
-        do{
-            i = h(k,c);
-            if(array[i]!=null) array[i].probeCount++;
-            probeCount++;
-            c++;
-        }while(array[i]!=null && array[i].k.equals(k));
-        if(array[i]!=null)
-        {
-            array[i].dupeCount++;
-            dupeCount++;
-        }
-        else{
-            array[i] = new HashObject(k);
-            array[i].probeCount = c;
-            probeCount += c;
-            size++;
-        }
+        if(size!=maxSize){
 
-        //class example don't delete just here for reference
-        // do
-        // {
-        //     i = pMod(pMod(k.hashCode(),capacity()) + c*h2(k.hashCode()), capacity());
-        //     if(array[i]!=null) array[i].probeCount++;
-        //     probeCount++;
-        //     c++;
-        // } while(array[i]!=null && !array[i].k.equals(k));
+            int i;
+            int c=0;
+            //runs linear probing value and inserts value
+            do{
+                i = h(k,c);
+                if(array[i]!=null) array[i].probeCount++;
+                probeCount++;
+                c++;
+            }while(array[i]!=null && array[i].k.equals(k));
+            if(array[i]!=null)
+            {
+                array[i].dupeCount++;
+                dupeCount++;
+                isDupe = 0;
+            }
+            else{
+                array[i] = new HashObject(k);
+                array[i].probeCount = c;
+                probeCount += c;
+                size++;
+                isDupe = 1;
+            }
 
-        // if(array[i]!=null)
-        // {
-        //     array[i].dupeCount++;
-        //     dupeCount++;
-        // }
-        // else
-        // {
-        //     array[i] = new HashObject(k);
-        //     array[i].probeCount = c;
-        //     probeCount += c;
-        //     size++; //@@@
-        // }
+        }
 
     }
 
@@ -156,6 +142,22 @@ public abstract class Hashtable<K>
 
     public int capacity(){
         return array.length;
+    }
+
+    public int getDupe(){
+        return isDupe;
+    }
+
+    public int getProbe(){
+        return probeCount;
+    }
+
+    public int getDupeCount(){
+        return dupeCount;
+    }
+
+    public double getProbeAvg(){
+        return probeCount/maxSize;
     }
 
 }
